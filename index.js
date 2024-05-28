@@ -3,14 +3,16 @@ const bodyParser = require('body-parser');
 const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 // Paramètres de configuration
 const PORT = 9000;
-const REPO_PATH = 'C:\\Users\\admindsi\\webhook';
+const REPO_PATH = path.resolve('C:/Users/admindsi/webhook');
 const BRANCH = 'main';
 
 if (!fs.existsSync(REPO_PATH)) {
     console.error(`Le chemin du dépôt local n'existe pas: ${REPO_PATH}`);
+    process.exit(1);
 }
 
 const app = express();
@@ -18,7 +20,6 @@ app.use(bodyParser.json());
 
 // Endpoint pour le webhook qui sera déclenché par GitHub lorsqu'un push est effectué
 app.post('/webhook', (req, res) => {
-
     const body = req.body;
 
     // On vérifie qu'il s'agit bien d'un push sur la branche spécifiée
@@ -31,22 +32,22 @@ app.post('/webhook', (req, res) => {
         // Pull de la dernière version du code
         git.pull('origin', BRANCH, (err, update) => {
             if (err) {
-                console.error('Echec lors du pull de la branch', err);
-                return res.status(500).send('Internal Server Error');
+                console.error('Echec lors du pull de la branche', err);
+                return res.status(500).send('Erreur interne du serveur');
             }
 
             if (update && update.summary.changes) {
                 console.log('Code mis à jour. Exécution de la commande de build...');
 
-                // Run your build command (adjust as necessary)
+                // Exécution de la commande de build
                 exec('npm install && npm run build', { cwd: REPO_PATH }, (buildErr, stdout, stderr) => {
                     if (buildErr) {
-                        console.error('echec du build:', buildErr);
+                        console.error('Echec du build:', buildErr);
                         console.error(stderr);
-                        return res.status(500).send('Internal Server Error');
+                        return res.status(500).send('Erreur interne du serveur');
                     }
-                    console.log('Build terminé avec succes:', stdout);
-                    res.status(200).send('webhook recu et traité avec succes');
+                    console.log('Build terminé avec succès:', stdout);
+                    res.status(200).send('Webhook reçu et traité avec succès');
                 });
             } else {
                 console.log('Actualisation non nécessaire. Aucun changement détecté.');
@@ -58,7 +59,7 @@ app.post('/webhook', (req, res) => {
     }
 });
 
-// Start the server
+// Démarrage du serveur
 app.listen(PORT, () => {
-    console.log(`le serveur est lancé et écoute sur le port: ${PORT}`);
+    console.log(`Le serveur est lancé et écoute sur le port: ${PORT}`);
 });
