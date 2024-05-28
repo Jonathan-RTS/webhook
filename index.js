@@ -6,7 +6,7 @@ const fs = require('fs');
 
 // Paramètres de configuration
 const PORT = 9000;
-const REPO_PATH = 'C:\\Users\\admindsi\\webhook\\index.js';
+const REPO_PATH = 'C:\\Users\\admindsi\\webhook';
 const BRANCH = 'main';
 
 if (!fs.existsSync(REPO_PATH)) {
