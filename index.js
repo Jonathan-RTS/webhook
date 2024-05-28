@@ -12,7 +12,7 @@ const BRANCH = 'main';
 if (!fs.existsSync(REPO_PATH)) {
     console.error(`Le chemin du dépôt local n'existe pas: ${REPO_PATH}`);
 }
-// Initialisation du serveur Express
+
 const app = express();
 app.use(bodyParser.json());
 
